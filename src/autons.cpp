@@ -47,17 +47,30 @@ void drive_test(){
   chassis.drive_distance(-36);
 }
 
+void clamp(){
+}
+
+//custom auton
+void my_auton() {
+   chassis.drive_distance(-50);
+   Solenoid.set(true);
+   Conveyor.spin(forward);
+   wait(500, msec);
+   Conveyor.stop();
+}
+
 /**
  * The expected behavior is to return to the start angle, after making a complete turn.
  */
 
-void turn_test(){
-  chassis.turn_to_angle(5);
-  chassis.turn_to_angle(30);
-  chassis.turn_to_angle(90);
-  chassis.turn_to_angle(225);
-  chassis.turn_to_angle(0);
-}
+// void turn_test(){Intake.spin(forward, 100, percent);
+//     Conveyor.spin(forward, 100, percent);
+//   chassis.turn_to_angle(5);
+//   chassis.turn_to_angle(30);
+//   chassis.turn_to_angle(90);
+//   chassis.turn_to_angle(225);
+//   chassis.turn_to_angle(0);
+// }
 
 /**
  * Should swing in a fun S shape.
@@ -87,18 +100,18 @@ void full_test(){
  * see if the coordinates increase like you'd expect.
  */
 
-void odom_test(){
-  chassis.set_coordinates(0, 0, 0);
-  while(1){
-    Brain.Screen.clearScreen();
-    Brain.Screen.printAt(5,20, "X: %f", chassis.get_X_position());
-    Brain.Screen.printAt(5,40, "Y: %f", chassis.get_Y_position());
-    Brain.Screen.printAt(5,60, "Heading: %f", chassis.get_absolute_heading());
-    Brain.Screen.printAt(5,80, "ForwardTracker: %f", chassis.get_ForwardTracker_position());
-    Brain.Screen.printAt(5,100, "SidewaysTracker: %f", chassis.get_SidewaysTracker_position());
-    task::sleep(20);
-  }
-}
+// void odom_test(){
+//   chassis.set_coordinates(0, 0, 0);
+//   while(1){
+//     Brain.Screen.clearScreen();
+//     Brain.Screen.printAt(5,20, "X: %f", chassis.get_X_position());
+//     Brain.Screen.printAt(5,40, "Y: %f", chassis.get_Y_position());
+//     Brain.Screen.printAt(5,60, "Heading: %f", chassis.get_absolute_heading());
+//     Brain.Screen.printAt(5,80, "ForwardTracker: %f", chassis.get_ForwardTracker_position());
+//     Brain.Screen.printAt(5,100, "SidewaysTracker: %f", chassis.get_SidewaysTracker_position());
+//     task::sleep(20);
+//   }
+// }
 
 /**
  * Should end in the same place it began, but the second movement

@@ -20,7 +20,7 @@ extern motor55 LadyBrown;
 
 extern inertial Inertial;
 extern rotation Rotation;
-extern vision ColorSort;
+extern optical ColorSort;
 extern digital_out Solenoid;
 
 extern controller controller1;

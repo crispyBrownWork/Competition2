@@ -1,5 +1,6 @@
 #include "vex.h"
 #include <list>
+#include <iostream>
 
 using namespace vex;
 competition Competition;
@@ -174,32 +175,33 @@ void pre_auton() {
 
 void autonomous(void) {
   auto_started = true;
-  switch(current_auton_selection){ 
-    case 0:
-      drive_test();
-      break;
-    case 1:         
-      drive_test();
-      break;
-    case 2:
-      turn_test();
-      break;
-    case 3:
-      swing_test();
-      break;
-    case 4:
-      full_test();
-      break;
-    case 5:
-      odom_test();
-      break;
-    case 6:
-      tank_odom_test();
-      break;
-    case 7:
-      holonomic_odom_test();
-      break;
- }
+  my_auton();
+//   switch(current_auton_selection){ 
+//     case 0:
+//       drive_test();
+//       break;
+//     case 1:         
+//       drive_test();
+//       break;
+//     case 2:
+//       // turn_test();
+//       break;
+//     case 3:
+//       swing_test();
+//       break;
+//     case 4:
+//       full_test();
+//       break;
+//     case 5:
+//       // odom_test();
+//       break;
+//     case 6:
+//       // tank_odom_test();
+//       break;
+//     case 7:
+//       // holonomic_odom_test();
+//       break;
+//  }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -213,24 +215,74 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 //initializations
-bool isSolenoid = false;
+
+//custom methods
+void rotateTo(int degrees) {
+  bool atTarget = (Rotation.angle() < degrees + 5 && Rotation.angle() < degrees - 5);
+  if (Rotation.angle() < degrees && !atTarget) {
+    LadyBrown.spin(forward);
+  } else if (Rotation.angle() > degrees && !atTarget) {
+    LadyBrown.spin(reverse);
+  } else {
+    LadyBrown.stop();
+  }
+}
+
+void handleBrownState(int brownState) {
+  switch (brownState) {
+    case 0:
+      rotateTo(0);
+      break;
+    case 1:
+      rotateTo(30);
+      break;
+    case 2:
+      rotateTo(120);
+      break;
+    case 3:
+      rotateTo(140);
+      break;
+    case 4:
+      rotateTo(180);
+      break;
+  }
+}
+
+void handleColorSort(color colorIn)
+{
+  // if (ColorSort.color() == colorIn) {
+  //   wait(500, msec);
+  //   Intake.stop();
+  //   Conveyor.stop();
+  //   wait(200, msec);
+  // }
+}
 
 void usercontrol(void) {
+  //initializations
+
+  bool isSolenoid = false;
+
+  int state = 0;
+
+  Rotation.resetPosition();
+
+  Conveyor.setVelocity(100, percent);
+  Intake.setVelocity(100, percent);
+  LadyBrown.setMaxTorque(127, amp);
+  LadyBrown.setVelocity(30, percent);
+
   // User control code here, inside the loop
   while (1) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
 
-    Conveyor.setVelocity(100, percent);
-    Intake.setVelocity(100, percent);
-    LadyBrown.setMaxTorque(127, amp);
-
     //Conveyor, Intake
-    if (controller1.ButtonDown.pressing()) {
+    if (controller1.ButtonR1.pressing()) {
       Conveyor.spin(forward);
       Intake.spin(reverse);
-    } else if (controller1.ButtonUp.pressing()) {
+    } else if (controller1.ButtonR2.pressing()) {
       Conveyor.spin(reverse);
       Intake.spin(forward);
     } else {
@@ -238,18 +290,36 @@ void usercontrol(void) {
       Intake.stop();
     }
 
-    //Lady Brown
-    if (controller1.ButtonLeft.pressing()) {
+    //Color Sort
+    handleColorSort(color::red);
+
+    // Lady Brown Manual
+
+    if (controller1.ButtonY.pressing()) {
+      LadyBrown.setVelocity(50, percent);
       LadyBrown.spin(forward);
-    } else if (controller1.ButtonRight.pressing()) {
+    } else if (controller1.ButtonX.pressing()) {
+      LadyBrown.setVelocity(25, percent);
       LadyBrown.spin(reverse);
     } else {
       LadyBrown.stop();
     }
 
+    // Lady Brown States
+
+    // if (controller1.ButtonX.pressing() && state <= 4) {
+    //   state ++;
+    //   Brain.Screen.print("State: %i", state);
+    //   wait(10, msec);
+    // } else if (controller1.ButtonY.pressing() && state >= 0) {
+    //   state --;
+    //   Brain.Screen.print("State: %i", state);
+    //   wait(10, msec);
+    // }
+
     //Lady Brown States
 
-
+    // handleBrownState(state);
 
     //Pneumatic
 
@@ -275,7 +345,6 @@ void usercontrol(void) {
     chassis.control_arcade();
 
     wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
   }
 }
 

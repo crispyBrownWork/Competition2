@@ -12,20 +12,20 @@ brain  Brain;
 
 //Add your devices below, and don't forget to do the same in robot-config.h:
 
-motor LeftFront = motor(PORT1, ratio6_1, true);
-motor LeftMiddle = motor(PORT3, ratio6_1, true);
-motor LeftBack = motor(PORT2, ratio6_1, true);
-motor RightFront = motor(PORT7, ratio6_1, false);
-motor RightMiddle = motor(PORT13, ratio6_1, false);
-motor RightBack = motor(PORT19, ratio6_1, false);
+motor LeftFront = motor(PORT3, ratio6_1, true);
+motor LeftMiddle = motor(PORT2, ratio6_1, true);
+motor LeftBack = motor(PORT1, ratio6_1, true);
+motor RightFront = motor(PORT15, ratio6_1, false);
+motor RightMiddle = motor(PORT14, ratio6_1, false);
+motor RightBack = motor(PORT13, ratio6_1, false);
 
-motor55 Intake = motor55(PORT8, false);
+motor55 Intake = motor55(PORT4, false);
 motor55 Conveyor = motor55(PORT20, false);
-motor55 LadyBrown = motor55(PORT11, false);
+motor55 LadyBrown = motor55(PORT18, false);
 
 inertial Inertial = inertial(PORT16);
 rotation Rotation = rotation(PORT17);
-vision ColorSort = vision(PORT8);
+// optical ColorSort = optical(PORT18);
 digital_out Solenoid = digital_out(Brain.ThreeWirePort.H);
 
 controller controller1 = controller(primary);
