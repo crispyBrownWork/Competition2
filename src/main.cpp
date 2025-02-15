@@ -3,7 +3,7 @@
 #include <iostream>
 
 const int numStates = 4;
-int states[numStates] = {0, -30, -130, -180};
+int states[numStates] = {-180, -130, -35, 0};
 int currState = 0;
 int target = 0;
 
@@ -229,6 +229,14 @@ void nextState() {
   target = states[currState];
 }
 
+void prevState() {
+  currState --;
+  if (currState == -1) {
+      currState = numStates - 1;
+  }
+  target = states[currState];
+}
+
 void stop() {
   LadyBrown.stop();
 }
@@ -291,8 +299,8 @@ void usercontrol(void) {
     //Lady Brown
 
     liftControl();
-    controller1.ButtonY.pressed(nextState);
-    controller1.ButtonX.pressed(stop);
+    controller1.ButtonX.pressed(nextState);
+    controller1.ButtonY.pressed(prevState);
     Brain.Screen.printAt(5, 160, "State: %d", currState);
     Brain.Screen.printAt(5, 180, "Target: %d", target);
     Brain.Screen.printAt(5, 200, "Rotation: %d", Rotation.position(degrees));
