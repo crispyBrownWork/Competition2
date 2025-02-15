@@ -2,6 +2,11 @@
 #include <list>
 #include <iostream>
 
+const int numStates = 4;
+int states[numStates] = {0, -30, -130, -180};
+int currState = 0;
+int target = 0;
+
 using namespace vex;
 competition Competition;
 
@@ -214,38 +219,26 @@ void autonomous(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-//initializations
-
 //custom methods
-void rotateTo(int degrees) {
-  bool atTarget = (Rotation.angle() < degrees + 5 && Rotation.angle() < degrees - 5);
-  if (Rotation.angle() < degrees && !atTarget) {
-    LadyBrown.spin(forward);
-  } else if (Rotation.angle() > degrees && !atTarget) {
-    LadyBrown.spin(reverse);
-  } else {
-    LadyBrown.stop();
+
+void nextState() {
+  currState ++;
+  if (currState == numStates) {
+      currState = 0;
   }
+  target = states[currState];
 }
 
-void handleBrownState(int brownState) {
-  switch (brownState) {
-    case 0:
-      rotateTo(0);
-      break;
-    case 1:
-      rotateTo(30);
-      break;
-    case 2:
-      rotateTo(120);
-      break;
-    case 3:
-      rotateTo(140);
-      break;
-    case 4:
-      rotateTo(180);
-      break;
-  }
+void stop() {
+  LadyBrown.stop();
+}
+
+void liftControl() {
+  double kp = 0.75;
+  double error = target - Rotation.position(degrees);
+  double velocity = kp * error;
+  LadyBrown.setVelocity(velocity);
+  LadyBrown.spin(forward);
 }
 
 void handleColorSort(color colorIn)
@@ -272,6 +265,8 @@ void usercontrol(void) {
   LadyBrown.setMaxTorque(127, amp);
   LadyBrown.setVelocity(30, percent);
 
+  Rotation.resetPosition();
+
   // User control code here, inside the loop
   while (1) {
     // This is the main execution loop for the user control program.
@@ -293,33 +288,14 @@ void usercontrol(void) {
     //Color Sort
     handleColorSort(color::red);
 
-    // Lady Brown Manual
+    //Lady Brown
 
-    if (controller1.ButtonY.pressing()) {
-      LadyBrown.setVelocity(50, percent);
-      LadyBrown.spin(forward);
-    } else if (controller1.ButtonX.pressing()) {
-      LadyBrown.setVelocity(25, percent);
-      LadyBrown.spin(reverse);
-    } else {
-      LadyBrown.stop();
-    }
-
-    // Lady Brown States
-
-    // if (controller1.ButtonX.pressing() && state <= 4) {
-    //   state ++;
-    //   Brain.Screen.print("State: %i", state);
-    //   wait(10, msec);
-    // } else if (controller1.ButtonY.pressing() && state >= 0) {
-    //   state --;
-    //   Brain.Screen.print("State: %i", state);
-    //   wait(10, msec);
-    // }
-
-    //Lady Brown States
-
-    // handleBrownState(state);
+    liftControl();
+    controller1.ButtonY.pressed(nextState);
+    controller1.ButtonX.pressed(stop);
+    Brain.Screen.printAt(5, 160, "State: %d", currState);
+    Brain.Screen.printAt(5, 180, "Target: %d", target);
+    Brain.Screen.printAt(5, 200, "Rotation: %d", Rotation.position(degrees));
 
     //Pneumatic
 
