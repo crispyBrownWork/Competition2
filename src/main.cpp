@@ -2,9 +2,9 @@
 #include <list>
 #include <iostream>
 
-const int numStates = 4;
-int states[numStates] = {-180, -130, -35, 0};
-int currState = 0;
+const int numStates = 6;
+int states[numStates] = {0, -220, -180, -130, -32, 0};
+int currState = numStates - 1;
 int target = 0;
 
 using namespace vex;
@@ -220,6 +220,11 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 //custom methods
+
+void togggleSolenoid() {
+  if(Solenoid) Solenoid.set(false);
+  else Solenoid.set(true);
+}
 
 void nextState() {
   currState ++;
