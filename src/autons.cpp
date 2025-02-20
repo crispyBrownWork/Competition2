@@ -52,11 +52,16 @@ void clamp(){
 
 //custom auton
 void my_auton() {
-   chassis.drive_distance(-50);
-   Solenoid.set(true);
-   Conveyor.spin(forward);
-   wait(500, msec);
-   Conveyor.stop();
+  Conveyor.setVelocity(100, percent);
+  Intake.setVelocity(100, percent);
+  
+  chassis.drive_distance(-30);
+  this_thread::sleep_for(100);
+  Solenoid.set(true);
+  Conveyor.spin(forward);
+  this_thread::sleep_for(100);
+  chassis.turn_to_angle(45);
+  chassis.drive_distance(30);
 }
 
 /**

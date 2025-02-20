@@ -7,6 +7,8 @@ int states[numStates] = {0, -220, -180, -130, -32, 0};
 int currState = numStates - 1;
 int target = 0;
 
+bool isSolenoid = false;
+
 using namespace vex;
 competition Competition;
 
@@ -180,7 +182,7 @@ void pre_auton() {
 
 void autonomous(void) {
   auto_started = true;
-  my_auton();
+  match_auton();
 //   switch(current_auton_selection){ 
 //     case 0:
 //       drive_test();
@@ -222,8 +224,13 @@ void autonomous(void) {
 //custom methods
 
 void togggleSolenoid() {
-  if(Solenoid) Solenoid.set(false);
-  else Solenoid.set(true);
+  if(isSolenoid) {
+    Solenoid.set(false);
+    isSolenoid = false;
+  } else {
+    Solenoid.set(true);
+    isSolenoid = true;
+  }
 }
 
 void nextState() {
@@ -256,12 +263,13 @@ void liftControl() {
 
 void handleColorSort(color colorIn)
 {
-  // if (ColorSort.color() == colorIn) {
-  //   wait(500, msec);
-  //   Intake.stop();
-  //   Conveyor.stop();
-  //   wait(200, msec);
-  // }
+  if (ColorSort.color() == colorIn) {
+    this_thread::sleep_for(100);
+    Intake.setStopping(brake);
+    Intake.stop();
+    this_thread::sleep_for(20);
+    Intake.setStopping(coast);
+  }
 }
 
 void usercontrol(void) {
@@ -312,18 +320,8 @@ void usercontrol(void) {
 
     //Pneumatic
 
-    if (controller1.ButtonB.pressing()) {
-      if (isSolenoid) {
-        Solenoid.set(false);
-        isSolenoid = false;
-      } else {
-        Solenoid.set(true);
-        isSolenoid = true;
-      }
-      wait(500, msec);
-    }
+    controller1.ButtonB.pressed(togggleSolenoid);
 
-    
     // ........................................................................
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.
